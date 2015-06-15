@@ -38,10 +38,7 @@ import android.media.AudioTrack;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
-import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,19 +55,15 @@ import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.EvaluatorListener;
 import com.iflytek.cloud.EvaluatorResult;
 import com.iflytek.cloud.InitListener;
-import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechEvaluator;
 import com.iflytek.cloud.SpeechSynthesizer;
 import com.iflytek.cloud.SynthesizerListener;
-import com.iflytek.cloud.ui.RecognizerDialogListener;
 import com.iflytek.ise.result.Result;
 import com.iflytek.ise.result.entity.Sentence;
 import com.iflytek.ise.result.entity.Word;
 import com.iflytek.ise.result.util.ResultTranslateUtil;
-import com.iflytek.speech.util.JsonParser;
-import com.iflytek.speech.util.TextComputer;
 import com.iflytek.speech.util.XmlResultParser;
 import com.nhaarman.listviewanimations.itemmanipulation.ExpandableListItemAdapter;
 import com.nhaarman.listviewanimations.swinginadapters.prepared.SwingBottomInAnimationAdapter;
@@ -149,6 +142,7 @@ public class ContentListItemActivity extends FragmentActivity {
 		mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 		int iMinBufSize = AudioTrack.getMinBufferSize(8000, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT);
 		audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 8000, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT, iMinBufSize, AudioTrack.MODE_STREAM);
+		mTts = SpeechSynthesizer.createSynthesizer(this, mTtsInitListener);
 		initData();
 		initListView();
 		// initspker();
@@ -268,87 +262,6 @@ public class ContentListItemActivity extends FragmentActivity {
 			e.printStackTrace();
 		}
 		return buffer;
-	}
-
-	// 听写 废除
-	class CustomRecognizerDialogListener implements RecognizerDialogListener {
-		ItemMode mMode;
-		String stringResult = "";
-
-		public CustomRecognizerDialogListener(ItemMode mode) {
-			mMode = mode;
-		}
-
-		public void onResult(RecognizerResult result, boolean isLast) {
-			// Log.d(TAG, "recognizer result：" + result.getResultString());
-			if (result.getResultString().equals(".")) {
-				return;
-			}
-			String text = JsonParser.parseIatResult(result.getResultString());
-			stringResult += text;
-			System.out.println(text + "");
-			int score = (int) (TextComputer.SimilarDegree(mMode.getEngcontent().replace(" ", "").replace("?", "").replace(".", "").replace(",", ""), stringResult.replace(" ", "").replace(".", "").replace("?", "").replace(",", "")) * 100);
-			if (score != 0) {
-				mMode.setScore(score);
-			} else {
-				return;
-			}
-			Toast.makeText(ContentListItemActivity.this, text, 0).show();
-			try {
-				TextView scoreTextView = (TextView) mMode.getTitleview().findViewById(R.id.score_tv);
-				scoreTextView.setText(mMode.getScore() + "");
-				if (mMode.getScore() == 100) {
-					scoreTextView.setBackgroundResource(R.drawable.circle_10_red);
-				} else if (mMode.getScore() >= 60) {
-					scoreTextView.setBackgroundResource(R.drawable.circle_10_green);
-				} else {
-					scoreTextView.setBackgroundResource(R.drawable.circle_10_gray);
-				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			try {
-
-				String source = mMode.getEngcontent().replace("’", "'").replace(",", " ").replace(".", " ").replace("?", " ").replace("!", " ").toLowerCase();
-				String[] results = stringResult.replace(".", " ").toLowerCase().split(" ");
-				TextView engcontentTv = (TextView) mMode.getTitleview().findViewById(R.id.engtitle_tv);
-				SpannableStringBuilder style = new SpannableStringBuilder(mMode.getEngcontent());
-				for (int i = 0; i < results.length; i++) {
-					int index = source.indexOf(results[i], 0);
-
-					while (index < source.length() - 1 && index >= 0) {
-						try {
-							if (source.charAt(index - 1) == ' ' && source.charAt(index + results[i].length()) == ' ') {
-
-								style.setSpan(new ForegroundColorSpan(Color.GREEN), index, index + results[i].length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-							}
-						} catch (Exception e) {
-							// TODO: handle exception
-							System.out.println("head or end");
-							style.setSpan(new ForegroundColorSpan(Color.GREEN), index, index + results[i].length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-						}
-
-						index = source.indexOf(results[i], index + results[i].length());
-					}
-
-				}
-				mMode.setEngcontentBuilder(style);
-				engcontentTv.setText(mMode.getEngcontentBuilder());
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-
-		}
-
-		/**
-		 * 识别回调错误.
-		 */
-		public void onError(SpeechError error) {
-			showTip(error.getPlainDescription(true));
-		}
-
 	}
 
 	// adabper 内容比较多 瞎写呗
@@ -538,28 +451,6 @@ public class ContentListItemActivity extends FragmentActivity {
 		});
 	}
 
-	// public void setListeningParam(ItemMode mode) {
-	// // 清空参数
-	// mIat.setParameter(SpeechConstant.PARAMS, null);
-	// // String lag = mSharedPreferences.getString("iat_language_preference",
-	// // "mandarin");
-	// // 设置引擎
-	// mIat.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD);
-	//
-	// // if (lag.equals("en_us")) {
-	// // 设置语言
-	// mIat.setParameter(SpeechConstant.LANGUAGE, "en_us");
-	//
-	// mIat.setParameter(SpeechConstant.VAD_BOS, "4000");
-	// // 设置语音后端点
-	// mIat.setParameter(SpeechConstant.VAD_EOS, "2000");
-	// // 设置标点符号
-	// mIat.setParameter(SpeechConstant.ASR_PTT, "1");
-	// // 设置音频保存路径
-	// mIat.setParameter(SpeechConstant.ASR_AUDIO_PATH, pcmpath + "recode" +
-	// mode.getTitle());
-	// }
-
 	/**
 	 * 参数设置
 	 * 
@@ -592,6 +483,10 @@ public class ContentListItemActivity extends FragmentActivity {
 		mTts.setParameter(SpeechConstant.STREAM_TYPE, "3");
 	}
 
+	/**
+	 * @param mode
+	 *            评测参数
+	 */
 	private void setIseParams(ItemMode mode) {
 
 		mSpeechEvaluator.setParameter(SpeechConstant.LANGUAGE, "en_us");
@@ -732,10 +627,12 @@ public class ContentListItemActivity extends FragmentActivity {
 								}
 
 								buffer.append("\n单词[" + ResultTranslateUtil.getContent(word.content) + "] ").append("朗读：" + ResultTranslateUtil.getDpMessageInfo(word.dp_message)).append(" 得分：" + word.total_score);
-								if (null == word.sylls) {
-									buffer.append("\n");
-									continue;
-								}
+								ResultTranslateUtil.getContent(word.content);
+								float f = word.total_score;
+								// if (null == word.sylls) {
+								// buffer.append("\n");
+								// continue;
+								// }
 
 								// for (Syll syll : word.sylls) {
 								// buffer.append("\n└音节[" +
@@ -753,7 +650,7 @@ public class ContentListItemActivity extends FragmentActivity {
 								// }
 								//
 								// }
-								buffer.append("\n");
+								// buffer.append("\n");
 							}
 						}
 						mMode.setScore((int) (result1.total_score * 20));
