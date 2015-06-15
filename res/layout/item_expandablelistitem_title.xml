@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp" >
+
+    <TextView
+        android:id="@+id/engtitle_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/chinestitle_tv"
+        android:layout_marginRight="5dp"
+        android:layout_toLeftOf="@+id/score_tv"
+        android:maxLines="170"
+        android:text="hahahahhahahahhahah ying"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/chinestitle_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/engtitle_tv"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="16dp"
+        android:layout_toLeftOf="@+id/score_tv"
+        android:layout_toRightOf="@+id/imageview_head"
+        android:text="哈哈哈哈哈哈"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/score_tv"
+        android:layout_width="40sp"
+        android:layout_height="40sp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/circle_40sp"
+        android:gravity="center"
+        android:text="100"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+    <ImageView
+        android:id="@+id/imageview_head"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/img_nature1" />
+
+</RelativeLayout>

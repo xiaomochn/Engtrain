@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ProgressWheel="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res/com.tt.engtrain"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp" >
+
+    <com.pascalwelsch.holocircularprogressbar.HoloCircularProgressBar
+        android:id="@+id/lessen_pgb"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="5dp"
+        android:background="@drawable/recoder"
+        app:marker_visible="false"
+        app:progress_background_color="@color/clear"
+        app:stroke_width="3dp"
+        />
+
+    <Button
+        android:id="@+id/recoderself_btn"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@+id/lessen_pgb"
+        android:background="@drawable/playrecoder"
+        android:text="" />
+
+    <com.pascalwelsch.holocircularprogressbar.HoloCircularProgressBar
+        android:id="@+id/recoder_progress"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/lessen_pgb"
+        android:background="@drawable/play"
+        app:marker_visible="false"
+        app:progress_background_color="@color/clear"
+        app:stroke_width="3dp"
+        app:thumb_visible="false" />
+
+</RelativeLayout>
