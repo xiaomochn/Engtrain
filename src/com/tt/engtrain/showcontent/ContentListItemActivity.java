@@ -62,10 +62,8 @@ import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechEvaluator;
-import com.iflytek.cloud.SpeechRecognizer;
 import com.iflytek.cloud.SpeechSynthesizer;
 import com.iflytek.cloud.SynthesizerListener;
-import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
 import com.iflytek.ise.result.Result;
 import com.iflytek.ise.result.entity.Sentence;
@@ -89,9 +87,9 @@ public class ContentListItemActivity extends FragmentActivity {
 	private static int selectedNumCloud = 0;
 	private static int selectedNumLocal = 0;
 	// 语音听写对象
-	private SpeechRecognizer mIat;
+	// private SpeechRecognizer mIat;
 	// 语音听写UI
-	private RecognizerDialog iatDialog;
+	// private RecognizerDialog iatDialog;
 	// 听写结果内容
 	private EditText mResultText;
 	int ret = 0;// 函数调用返回值
@@ -153,7 +151,7 @@ public class ContentListItemActivity extends FragmentActivity {
 		audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 8000, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT, iMinBufSize, AudioTrack.MODE_STREAM);
 		initData();
 		initListView();
-		initspker();
+		// initspker();
 
 	}
 
@@ -192,18 +190,18 @@ public class ContentListItemActivity extends FragmentActivity {
 		mListView.setAdapter(swingBottomInAnimationAdapter);
 	}
 
-	private void initspker() {
-		mIat = SpeechRecognizer.createRecognizer(this, mTtsInitListener);
-		// 初始化听写Dialog,如果只使用有UI听写功能,无需创建SpeechRecognizer
-		iatDialog = new RecognizerDialog(this, mTtsInitListener);
-		//
-		// mSharedPreferences = getSharedPreferences(IatSettings.PREFER_NAME,
-		// Activity.MODE_PRIVATE);
-		// mResultText = ((EditText) findViewById(R.id.iat_text));
-		// ### 发音部分
-		mTts = SpeechSynthesizer.createSynthesizer(this, mTtsInitListener);
-
-	}
+	// private void initspker() {
+	// mIat = SpeechRecognizer.createRecognizer(this, mTtsInitListener);
+	// // 初始化听写Dialog,如果只使用有UI听写功能,无需创建SpeechRecognizer
+	// iatDialog = new RecognizerDialog(this, mTtsInitListener);
+	// //
+	// // mSharedPreferences = getSharedPreferences(IatSettings.PREFER_NAME,
+	// // Activity.MODE_PRIVATE);
+	// // mResultText = ((EditText) findViewById(R.id.iat_text));
+	// // ### 发音部分
+	// mTts = SpeechSynthesizer.createSynthesizer(this, mTtsInitListener);
+	//
+	// }
 
 	// 开始评测
 	public void startListening(ItemMode mode) {
@@ -538,28 +536,29 @@ public class ContentListItemActivity extends FragmentActivity {
 				mToast.show();
 			}
 		});
-	}啊
-
-	public void setListeningParam(ItemMode mode) {
-		// 清空参数
-		mIat.setParameter(SpeechConstant.PARAMS, null);
-		// String lag = mSharedPreferences.getString("iat_language_preference",
-		// "mandarin");
-		// 设置引擎
-		mIat.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD);
-
-		// if (lag.equals("en_us")) {
-		// 设置语言
-		mIat.setParameter(SpeechConstant.LANGUAGE, "en_us");
-
-		mIat.setParameter(SpeechConstant.VAD_BOS, "4000");
-		// 设置语音后端点
-		mIat.setParameter(SpeechConstant.VAD_EOS, "2000");
-		// 设置标点符号
-		mIat.setParameter(SpeechConstant.ASR_PTT, "1");
-		// 设置音频保存路径
-		mIat.setParameter(SpeechConstant.ASR_AUDIO_PATH, pcmpath + "recode" + mode.getTitle());
 	}
+
+	// public void setListeningParam(ItemMode mode) {
+	// // 清空参数
+	// mIat.setParameter(SpeechConstant.PARAMS, null);
+	// // String lag = mSharedPreferences.getString("iat_language_preference",
+	// // "mandarin");
+	// // 设置引擎
+	// mIat.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD);
+	//
+	// // if (lag.equals("en_us")) {
+	// // 设置语言
+	// mIat.setParameter(SpeechConstant.LANGUAGE, "en_us");
+	//
+	// mIat.setParameter(SpeechConstant.VAD_BOS, "4000");
+	// // 设置语音后端点
+	// mIat.setParameter(SpeechConstant.VAD_EOS, "2000");
+	// // 设置标点符号
+	// mIat.setParameter(SpeechConstant.ASR_PTT, "1");
+	// // 设置音频保存路径
+	// mIat.setParameter(SpeechConstant.ASR_AUDIO_PATH, pcmpath + "recode" +
+	// mode.getTitle());
+	// }
 
 	/**
 	 * 参数设置
@@ -887,8 +886,8 @@ public class ContentListItemActivity extends FragmentActivity {
 		mTts.stopSpeaking();
 		// 退出时释放连接
 		mTts.destroy();
-		mIat.cancel();
-		mIat.destroy();
+		// mIat.cancel();
+		// mIat.destroy();
 		if (null != mSpeechEvaluator) {
 			mSpeechEvaluator.cancel(false);
 		}
